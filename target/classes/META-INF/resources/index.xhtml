@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Gerenciador de Tarefas</title>
+    <h:outputStylesheet library="webjars" name="primeflex/3.3.0/primeflex.min.css" />
+    <style type="text/css">
+        .task-form .ui-panel-content {
+            padding: 2rem !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .task-form .form-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 1rem;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+        .task-form .form-grid .ui-outputlabel {
+            justify-self: end;
+            font-weight: bold;
+        }
+        .task-form .form-grid .ui-inputtext,
+        .task-form .form-grid .ui-inputtextarea,
+        .task-form .form-grid .ui-selectonemenu {
+            width: 100%;
+            max-width: 400px;
+        }
+        .task-form .button-container {
+            margin-top: 1rem;
+            width: 100%;
+            max-width: 600px;
+            padding-left: 120px;
+            text-align: left;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="card">
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true"/>
+            
+            <p:panel header="Cadastrar Tarefa" styleClass="task-form">
+                <div class="form-grid">
+                    <p:outputLabel for="titulo" value="Título:"/>
+                    <p:inputText id="titulo" value="#{taskController.task.titulo}" required="true"/>
+                    
+                    <p:outputLabel for="descricao" value="Descrição:"/>
+                    <p:inputTextarea id="descricao" value="#{taskController.task.descricao}" rows="3"/>
+                    
+                    <p:outputLabel for="responsavel" value="Responsável:"/>
+                    <p:selectOneMenu id="responsavel" value="#{taskController.task.responsavel}" required="true">
+                        <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+                        <f:selectItem itemLabel="João" itemValue="João"/>
+                        <f:selectItem itemLabel="Maria" itemValue="Maria"/>
+                        <f:selectItem itemLabel="Pedro" itemValue="Pedro"/>
+                    </p:selectOneMenu>
+                    
+                    <p:outputLabel for="prioridade" value="Prioridade:"/>
+                    <p:selectOneMenu id="prioridade" value="#{taskController.task.prioridade}" required="true">
+                        <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+                        <f:selectItem itemLabel="Alta" itemValue="ALTA"/>
+                        <f:selectItem itemLabel="Média" itemValue="MEDIA"/>
+                        <f:selectItem itemLabel="Baixa" itemValue="BAIXA"/>
+                    </p:selectOneMenu>
+                    
+                    <p:outputLabel for="deadline" value="Deadline:"/>
+                    <p:datePicker id="deadline" value="#{taskController.task.deadline}" required="true"
+                                pattern="dd/MM/yyyy" showIcon="true"/>
+                </div>
+                
+                <div class="button-container">
+                    <p:commandButton value="Cadastrar" action="#{taskController.salvar}" 
+                                   update="form" styleClass="ui-button-primary"/>
+                                   
+                    <p:commandButton value="Cancelar" action="#{taskController.cancelarEdicao}" 
+                                   update="form" rendered="#{taskController.task.id != null}"
+                                   styleClass="ui-button-secondary"
+                                   style="margin-left: 0.5rem;"
+                                   immediate="true"/>
+                </div>
+            </p:panel>
+            
+            <p:panel header="Filtros" style="margin-top: 20px;" id="painelFiltros">
+                <h:panelGrid columns="2" cellpadding="5">
+                    <p:outputLabel for="filtroTitulo" value="Título:"/>
+                    <p:inputText id="filtroTitulo" value="#{taskController.filtro.titulo}"/>
+                    
+                    <p:outputLabel for="filtroResponsavel" value="Responsável:"/>
+                    <p:inputText id="filtroResponsavel" value="#{taskController.filtro.responsavel}"/>
+                    
+                    <p:outputLabel for="filtroPrioridade" value="Prioridade:"/>
+                    <p:selectOneMenu id="filtroPrioridade" value="#{taskController.filtro.prioridade}">
+                        <f:selectItem itemLabel="Selecione..." itemValue="#{null}"/>
+                        <f:selectItem itemLabel="Alta" itemValue="ALTA"/>
+                        <f:selectItem itemLabel="Média" itemValue="MEDIA"/>
+                        <f:selectItem itemLabel="Baixa" itemValue="BAIXA"/>
+                    </p:selectOneMenu>
+                </h:panelGrid>
+                
+                <div style="margin-top: 10px;">
+                    <p:commandButton value="Filtrar" action="#{taskController.filtrar}" 
+                                   update="tabelaTarefas messages"
+                                   style="margin-right: 5px;"
+                                   process="painelFiltros @this"/>
+                                   
+                    <p:commandButton value="Limpar Filtros" action="#{taskController.limparFiltros}" 
+                                   update="painelFiltros tabelaTarefas messages"
+                                   styleClass="ui-button-secondary"
+                                   process="@this"/>
+                </div>
+            </p:panel>
+            
+            <p:dataTable id="tabelaTarefas" value="#{taskController.tasks}" var="task"
+                        style="margin-top: 20px;" emptyMessage="Nenhuma tarefa encontrada">
+                <p:column headerText="Título">
+                    <h:outputText value="#{task.titulo}"/>
+                </p:column>
+                
+                <p:column headerText="Responsável">
+                    <h:outputText value="#{task.responsavel}"/>
+                </p:column>
+                
+                <p:column headerText="Prioridade">
+                    <h:outputText value="#{task.prioridade.descricao}"/>
+                </p:column>
+                
+                <p:column headerText="Deadline">
+                    <h:outputText value="#{task.deadline}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate"/>
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Ações" style="width:100px;text-align: center">
+                    <p:commandButton icon="pi pi-pencil" action="#{taskController.editar(task)}"
+                                   update="form" immediate="true" process="@this"/>
+                    <p:commandButton icon="pi pi-trash" styleClass="ui-button-danger">
+                        <p:confirm type="popup" header="Confirmação" 
+                                 message="Tem certeza que deseja excluir esta tarefa?" 
+                                 icon="pi pi-exclamation-triangle"/>
+                        <p:ajax listener="#{taskController.excluir(task)}" update="form"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            
+            <p:confirmPopup global="true">
+                <p:commandButton value="Não" type="button" 
+                               styleClass="ui-confirm-popup-no ui-button-flat"/>
+                <p:commandButton value="Sim" type="button" 
+                               styleClass="ui-confirm-popup-yes"/>
+            </p:confirmPopup>
+        </h:form>
+    </div>
+</h:body>
+</html> 
