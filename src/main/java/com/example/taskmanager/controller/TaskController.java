@@ -81,23 +81,54 @@ public class TaskController implements Serializable {
             new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "Edição cancelada!"));
     }
 
+    public void concluirTarefa(Task task) {
+        try {
+            task.setSituacao(Task.Situacao.CONCLUIDA);
+            taskService.salvar(task);
+            carregarTarefas();
+            FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Tarefa concluída com sucesso!"));
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null, 
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Erro ao concluir tarefa!"));
+        }
+    }
+
+    public Task.Situacao[] getSituacoes() {
+        return Task.Situacao.values();
+    }
+
+
     public void filtrar() {
         try {
             Specification<Task> spec = Specification.where(null);
             
-            if (filtro.getTitulo() != null && !filtro.getTitulo().trim().isEmpty()) {
+            if (filtro.getId() != null) {
                 spec = spec.and((root, query, cb) -> 
-                    cb.like(cb.lower(root.get("titulo")), "%" + filtro.getTitulo().toLowerCase().trim() + "%"));
+                    cb.equal(root.get("id"), filtro.getId()));
+            }
+            
+            if (filtro.getTitulo() != null && !filtro.getTitulo().trim().isEmpty()) {
+                String termoBusca = "%" + filtro.getTitulo().toLowerCase().trim() + "%";
+                spec = spec.and((root, query, cb) -> 
+                    cb.or(
+                        cb.like(cb.lower(root.get("titulo")), termoBusca),
+                        cb.like(cb.lower(root.get("descricao")), termoBusca)
+                    ));
             }
             
             if (filtro.getResponsavel() != null && !filtro.getResponsavel().trim().isEmpty()) {
                 spec = spec.and((root, query, cb) -> 
-                    cb.like(cb.lower(root.get("responsavel")), "%" + filtro.getResponsavel().toLowerCase().trim() + "%"));
+                    cb.equal(root.get("responsavel"), filtro.getResponsavel()));
             }
-            
-            if (filtro.getPrioridade() != null) {
+
+            if (filtro.getSituacao() != null) {
                 spec = spec.and((root, query, cb) -> 
-                    cb.equal(root.get("prioridade"), filtro.getPrioridade()));
+                    cb.equal(root.get("situacao"), filtro.getSituacao()));
+            } else {
+                // Por padrão, mostrar apenas tarefas em andamento
+                spec = spec.and((root, query, cb) -> 
+                    cb.equal(root.get("situacao"), Task.Situacao.EM_ANDAMENTO));
             }
             
             tasks = taskService.buscarComFiltro(spec);

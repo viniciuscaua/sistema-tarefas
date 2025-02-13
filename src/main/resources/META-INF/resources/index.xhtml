@@ -91,18 +91,26 @@
             
             <p:panel header="Filtros" style="margin-top: 20px;" id="painelFiltros">
                 <h:panelGrid columns="2" cellpadding="5">
-                    <p:outputLabel for="filtroTitulo" value="Título:"/>
-                    <p:inputText id="filtroTitulo" value="#{taskController.filtro.titulo}"/>
+                    <p:outputLabel for="filtroNumero" value="Número:"/>
+                    <p:inputNumber id="filtroNumero" value="#{taskController.filtro.id}" 
+                                 decimalPlaces="0" thousandSeparator=""/>
+                    
+                    <p:outputLabel for="filtroTituloDesc" value="Título/Descrição:"/>
+                    <p:inputText id="filtroTituloDesc" value="#{taskController.filtro.titulo}"/>
                     
                     <p:outputLabel for="filtroResponsavel" value="Responsável:"/>
-                    <p:inputText id="filtroResponsavel" value="#{taskController.filtro.responsavel}"/>
-                    
-                    <p:outputLabel for="filtroPrioridade" value="Prioridade:"/>
-                    <p:selectOneMenu id="filtroPrioridade" value="#{taskController.filtro.prioridade}">
+                    <p:selectOneMenu id="filtroResponsavel" value="#{taskController.filtro.responsavel}">
                         <f:selectItem itemLabel="Selecione..." itemValue="#{null}"/>
-                        <f:selectItem itemLabel="Alta" itemValue="ALTA"/>
-                        <f:selectItem itemLabel="Média" itemValue="MEDIA"/>
-                        <f:selectItem itemLabel="Baixa" itemValue="BAIXA"/>
+                        <f:selectItem itemLabel="João" itemValue="João"/>
+                        <f:selectItem itemLabel="Maria" itemValue="Maria"/>
+                        <f:selectItem itemLabel="Pedro" itemValue="Pedro"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel for="filtroSituacao" value="Situação:"/>
+                    <p:selectOneMenu id="filtroSituacao" value="#{taskController.filtro.situacao}">
+                        <f:selectItem itemLabel="Selecione..." itemValue="#{null}"/>
+                        <f:selectItem itemLabel="Em andamento" itemValue="EM_ANDAMENTO"/>
+                        <f:selectItem itemLabel="Concluída" itemValue="CONCLUIDA"/>
                     </p:selectOneMenu>
                 </h:panelGrid>
                 
@@ -121,8 +129,14 @@
             
             <p:dataTable id="tabelaTarefas" value="#{taskController.tasks}" var="task"
                         style="margin-top: 20px;" emptyMessage="Nenhuma tarefa encontrada">
+                <p:column headerText="Número" style="width: 80px;">
+                    <h:outputText value="#{task.id}"/>
+                </p:column>
+
                 <p:column headerText="Título">
                     <h:outputText value="#{task.titulo}"/>
+                    <br/>
+                    <h:outputText value="#{task.descricao}" style="font-size: 0.9em; color: #666;"/>
                 </p:column>
                 
                 <p:column headerText="Responsável">
@@ -139,10 +153,32 @@
                     </h:outputText>
                 </p:column>
                 
-                <p:column headerText="Ações" style="width:100px;text-align: center">
+                <p:column headerText="Situação">
+                    <h:outputText value="#{task.situacao.descricao}"/>
+                </p:column>
+                
+                <p:column headerText="Ações" style="width:130px;text-align: center">
+                    <p:commandButton icon="pi pi-check" action="#{taskController.concluirTarefa(task)}"
+                                   update="form" styleClass="ui-button-success"
+                                   style="margin-right: 5px;"
+                                   rendered="#{task.situacao == 'EM_ANDAMENTO'}"
+                                   title="Concluir"
+                                   process="@this"
+                                   immediate="true">
+                        <p:confirm type="popup" header="Confirmação" 
+                                 message="Tem certeza que deseja concluir esta tarefa?" 
+                                 icon="pi pi-exclamation-triangle"/>
+                    </p:commandButton>
+                    
                     <p:commandButton icon="pi pi-pencil" action="#{taskController.editar(task)}"
-                                   update="form" immediate="true" process="@this"/>
-                    <p:commandButton icon="pi pi-trash" styleClass="ui-button-danger">
+                                   update="form" immediate="true" process="@this"
+                                   styleClass="ui-button-warning"
+                                   style="margin-right: 5px;"
+                                   rendered="#{task.situacao == 'EM_ANDAMENTO'}"
+                                   title="Editar"/>
+                                   
+                    <p:commandButton icon="pi pi-trash" styleClass="ui-button-danger"
+                                   title="Excluir">
                         <p:confirm type="popup" header="Confirmação" 
                                  message="Tem certeza que deseja excluir esta tarefa?" 
                                  icon="pi pi-exclamation-triangle"/>

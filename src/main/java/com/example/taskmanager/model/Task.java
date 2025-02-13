@@ -28,6 +28,10 @@ public class Task {
     
     @Column(nullable = false)
     private LocalDate deadline;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Situacao situacao = Situacao.EM_ANDAMENTO;
     
     public enum Prioridade {
         ALTA("Alta"),
@@ -53,6 +57,21 @@ public class Task {
                 }
             }
             return null;
+        }
+    }
+
+    public enum Situacao {
+        EM_ANDAMENTO("Em andamento"),
+        CONCLUIDA("Concluída");
+
+        private final String descricao;
+
+        Situacao(String descricao) {
+            this.descricao = descricao;
+        }
+
+        public String getDescricao() {
+            return descricao;
         }
     }
 } 
