@@ -7,38 +7,80 @@
 
 <h:head>
     <title>Gerenciador de Tarefas</title>
-    <h:outputStylesheet library="webjars" name="primeflex/3.3.0/primeflex.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/primeflex@3.3.1/primeflex.min.css"/>
     <style type="text/css">
         .task-form .ui-panel-content {
             padding: 2rem !important;
+        }
+        .task-form .form-container {
+            max-width: 800px;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
-            align-items: center;
-        }
-        .task-form .form-grid {
-            display: grid;
-            grid-template-columns: 120px 1fr;
             gap: 1rem;
-            align-items: center;
-            width: 100%;
-            max-width: 600px;
         }
-        .task-form .form-grid .ui-outputlabel {
-            justify-self: end;
+        .task-form .form-row {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+        }
+        .task-form .form-field {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .task-form .form-field label {
             font-weight: bold;
+            margin-bottom: 0.5rem;
         }
-        .task-form .form-grid .ui-inputtext,
-        .task-form .form-grid .ui-inputtextarea,
-        .task-form .form-grid .ui-selectonemenu {
+        .task-form .form-field.full-width {
+            flex: 0 0 100%;
+        }
+        .task-form .form-field .ui-inputtext,
+        .task-form .form-field .ui-inputtextarea,
+        .task-form .form-field .ui-selectonemenu {
             width: 100%;
-            max-width: 400px;
         }
         .task-form .button-container {
-            margin-top: 1rem;
-            width: 100%;
-            max-width: 600px;
-            padding-left: 120px;
-            text-align: left;
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .ui-panel .ui-panel-titlebar {
+            background-color: #1a237e !important;
+            color: #ffffff !important;
+            border: 1px solid #1a237e !important;
+        }
+
+        .ui-datatable .ui-datatable-header,
+        .ui-datatable thead th {
+            background-color: #1a237e !important;
+            color: #ffffff !important;
+            border: 1px solid #1a237e !important;
+        }
+
+        .ui-datatable thead th {
+            border-color: #1a237e !important;
+        }
+
+        .ui-button.ui-button-primary {
+            background: #1a237e !important;
+            border-color: #1a237e !important;
+        }
+        .ui-button.ui-button-primary:hover {
+            background: #151b60 !important;
+            border-color: #151b60 !important;
+        }
+
+        .ui-datepicker-trigger {
+            background: #1a237e !important;
+            border-color: #1a237e !important;
+        }
+        .ui-datepicker-trigger:hover {
+            background: #151b60 !important;
+            border-color: #151b60 !important;
         }
     </style>
 </h:head>
@@ -49,115 +91,141 @@
             <p:growl id="messages" showDetail="true"/>
             
             <p:panel header="Cadastrar Tarefa" styleClass="task-form">
-                <div class="form-grid">
-                    <p:outputLabel for="titulo" value="Título:"/>
-                    <p:inputText id="titulo" value="#{taskController.task.titulo}" required="true"/>
+                <div class="form-container">
+                    <div class="form-row">
+                        <div class="form-field full-width">
+                            <p:outputLabel for="titulo" value="Título"/>
+                            <p:inputText id="titulo" value="#{taskController.task.titulo}" required="true"/>
+                        </div>
+                    </div>
                     
-                    <p:outputLabel for="descricao" value="Descrição:"/>
-                    <p:inputTextarea id="descricao" value="#{taskController.task.descricao}" rows="3"/>
+                    <div class="form-row">
+                        <div class="form-field full-width">
+                            <p:outputLabel for="descricao" value="Descrição"/>
+                            <p:inputTextarea id="descricao" value="#{taskController.task.descricao}" 
+                                           rows="4" autoResize="false"/>
+                        </div>
+                    </div>
                     
-                    <p:outputLabel for="responsavel" value="Responsável:"/>
-                    <p:selectOneMenu id="responsavel" value="#{taskController.task.responsavel}" required="true">
-                        <f:selectItem itemLabel="Select" noSelectionOption="true"/>
-                        <f:selectItem itemLabel="João" itemValue="João"/>
-                        <f:selectItem itemLabel="Maria" itemValue="Maria"/>
-                        <f:selectItem itemLabel="Pedro" itemValue="Pedro"/>
-                    </p:selectOneMenu>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <p:outputLabel for="responsavel" value="Responsável"/>
+                            <p:selectOneMenu id="responsavel" value="#{taskController.task.responsavel}" required="true">
+                                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+                                <f:selectItem itemLabel="João" itemValue="João"/>
+                                <f:selectItem itemLabel="Maria" itemValue="Maria"/>
+                                <f:selectItem itemLabel="Pedro" itemValue="Pedro"/>
+                            </p:selectOneMenu>
+                        </div>
+                        
+                        <div class="form-field">
+                            <p:outputLabel for="prioridade" value="Prioridade"/>
+                            <p:selectOneMenu id="prioridade" value="#{taskController.task.prioridade}" required="true">
+                                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+                                <f:selectItem itemLabel="Alta" itemValue="ALTA"/>
+                                <f:selectItem itemLabel="Média" itemValue="MEDIA"/>
+                                <f:selectItem itemLabel="Baixa" itemValue="BAIXA"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
                     
-                    <p:outputLabel for="prioridade" value="Prioridade:"/>
-                    <p:selectOneMenu id="prioridade" value="#{taskController.task.prioridade}" required="true">
-                        <f:selectItem itemLabel="Select" noSelectionOption="true"/>
-                        <f:selectItem itemLabel="Alta" itemValue="ALTA"/>
-                        <f:selectItem itemLabel="Média" itemValue="MEDIA"/>
-                        <f:selectItem itemLabel="Baixa" itemValue="BAIXA"/>
-                    </p:selectOneMenu>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <p:outputLabel for="deadline" value="Deadline"/>
+                            <p:datePicker id="deadline" value="#{taskController.task.deadline}" required="true"
+                                        pattern="dd/MM/yyyy" showIcon="true" styleClass="custom-datepicker"/>
+                        </div>
+                    </div>
                     
-                    <p:outputLabel for="deadline" value="Deadline:"/>
-                    <p:datePicker id="deadline" value="#{taskController.task.deadline}" required="true"
-                                pattern="dd/MM/yyyy" showIcon="true"/>
-                </div>
-                
-                <div class="button-container">
-                    <p:commandButton value="Cadastrar" action="#{taskController.salvar}" 
-                                   update="form" styleClass="ui-button-primary"/>
-                                   
-                    <p:commandButton value="Cancelar" action="#{taskController.cancelarEdicao}" 
-                                   update="form" rendered="#{taskController.task.id != null}"
-                                   styleClass="ui-button-secondary"
-                                   style="margin-left: 0.5rem;"
-                                   immediate="true"/>
+                    <div class="button-container">
+                        <p:commandButton value="Cadastrar" action="#{taskController.salvar}" 
+                                       update="form" styleClass="ui-button-primary"/>
+                                       
+                        <p:commandButton value="Cancelar" action="#{taskController.cancelarEdicao}" 
+                                       update="form" rendered="#{taskController.task.id != null}"
+                                       styleClass="ui-button-secondary"
+                                       immediate="true"/>
+                    </div>
                 </div>
             </p:panel>
             
-            <p:panel header="Filtros" style="margin-top: 20px;" id="painelFiltros">
-                <h:panelGrid columns="2" cellpadding="5">
-                    <p:outputLabel for="filtroNumero" value="Número:"/>
-                    <p:inputNumber id="filtroNumero" value="#{taskController.filtro.id}" 
-                                 decimalPlaces="0" thousandSeparator=""/>
+            <p:panel header="Listagem de Tarefas" style="margin-top: 20px;" id="painelFiltros" styleClass="task-form">
+                <div class="form-container" style="gap: 2rem;">
+                    <div class="form-row">
+                        <div class="form-field" style="flex: 0 0 250px;">
+                            <p:outputLabel for="filtroNumero" value="Número" style="margin-bottom: 0.5rem;"/>
+                            <p:inputNumber id="filtroNumero" value="#{taskController.filtro.id}" 
+                                         decimalPlaces="0" thousandSeparator=""
+                                         style="width: 100%;"/>
+                        </div>
+                    </div>
                     
-                    <p:outputLabel for="filtroTituloDesc" value="Título/Descrição:"/>
-                    <p:inputText id="filtroTituloDesc" value="#{taskController.filtro.titulo}"/>
+                    <div class="form-row">
+                        <div class="form-field" style="flex: 0 0 600px;">
+                            <p:outputLabel for="filtroTituloDesc" value="Título/Descrição" style="margin-bottom: 0.5rem;"/>
+                            <p:inputText id="filtroTituloDesc" value="#{taskController.filtro.titulo}"
+                                       style="width: 100%;"/>
+                        </div>
+                    </div>
                     
-                    <p:outputLabel for="filtroResponsavel" value="Responsável:"/>
-                    <p:selectOneMenu id="filtroResponsavel" value="#{taskController.filtro.responsavel}">
-                        <f:selectItem itemLabel="Selecione..." itemValue="#{null}"/>
-                        <f:selectItem itemLabel="João" itemValue="João"/>
-                        <f:selectItem itemLabel="Maria" itemValue="Maria"/>
-                        <f:selectItem itemLabel="Pedro" itemValue="Pedro"/>
-                    </p:selectOneMenu>
-
-                    <p:outputLabel for="filtroSituacao" value="Situação:"/>
-                    <p:selectOneMenu id="filtroSituacao" value="#{taskController.filtro.situacao}">
-                        <f:selectItem itemLabel="Selecione..." itemValue="#{null}"/>
-                        <f:selectItem itemLabel="Em andamento" itemValue="EM_ANDAMENTO"/>
-                        <f:selectItem itemLabel="Concluída" itemValue="CONCLUIDA"/>
-                    </p:selectOneMenu>
-                </h:panelGrid>
-                
-                <div style="margin-top: 10px;">
-                    <p:commandButton value="Filtrar" action="#{taskController.filtrar}" 
-                                   update="tabelaTarefas messages"
-                                   style="margin-right: 5px;"
-                                   process="painelFiltros @this"/>
-                                   
-                    <p:commandButton value="Limpar Filtros" action="#{taskController.limparFiltros}" 
-                                   update="painelFiltros tabelaTarefas messages"
-                                   styleClass="ui-button-secondary"
-                                   process="@this"/>
+                    <div class="form-row" style="gap: 2rem;">
+                        <div class="form-field" style="flex: 0 0 250px;">
+                            <p:outputLabel for="filtroResponsavel" value="Responsável" style="margin-bottom: 0.5rem;"/>
+                            <p:selectOneMenu id="filtroResponsavel" value="#{taskController.filtro.responsavel}"
+                                           style="width: 100%;">
+                                <f:selectItem itemLabel="Selecione..." itemValue="#{null}"/>
+                                <f:selectItem itemLabel="João" itemValue="João"/>
+                                <f:selectItem itemLabel="Maria" itemValue="Maria"/>
+                                <f:selectItem itemLabel="Pedro" itemValue="Pedro"/>
+                            </p:selectOneMenu>
+                        </div>
+                        
+                        <div class="form-field" style="flex: 0 0 250px;">
+                            <p:outputLabel for="filtroSituacao" value="Situação" style="margin-bottom: 0.5rem;"/>
+                            <p:selectOneMenu id="filtroSituacao" value="#{taskController.filtro.situacao}"
+                                           style="width: 100%;">
+                                <f:selectItem itemLabel="Selecione..." itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Em andamento" itemValue="EM_ANDAMENTO"/>
+                                <f:selectItem itemLabel="Concluída" itemValue="CONCLUIDA"/>
+                            </p:selectOneMenu>
+                        </div>
+                        
+                        <div class="form-field" style="flex: 0 0 auto; justify-content: flex-end;">
+                            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                                <p:commandButton value="Filtrar" action="#{taskController.filtrar}" 
+                                               update="tabelaTarefas messages"
+                                               styleClass="ui-button-primary"
+                                               process="painelFiltros @this"/>
+                                               
+                                <p:commandButton value="Limpar Filtros" action="#{taskController.limparFiltros}" 
+                                               update="painelFiltros tabelaTarefas messages"
+                                               styleClass="ui-button-secondary"
+                                               process="@this"/>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </p:panel>
             
             <p:dataTable id="tabelaTarefas" value="#{taskController.tasks}" var="task"
-                        style="margin-top: 20px;" emptyMessage="Nenhuma tarefa encontrada">
-                <p:column headerText="Número" style="width: 80px;">
+                        style="margin-top: 20px;" emptyMessage="Nenhuma tarefa encontrada"
+                        styleClass="task-table">
+                <p:column headerText="Número" style="width: 100px; text-align: center;">
                     <h:outputText value="#{task.id}"/>
                 </p:column>
 
-                <p:column headerText="Título">
-                    <h:outputText value="#{task.titulo}"/>
-                    <br/>
-                    <h:outputText value="#{task.descricao}" style="font-size: 0.9em; color: #666;"/>
+                <p:column headerText="Título/Descrição" style="text-align: center;">
+                    <div style="max-width: 600px; margin: 0 auto;">
+                        <h:outputText value="#{task.titulo}" style="font-weight: bold; display: block;"/>
+                        <h:outputText value="#{task.descricao}" style="font-size: 0.9em; color: #666; display: block;"/>
+                    </div>
                 </p:column>
                 
-                <p:column headerText="Responsável">
+                <p:column headerText="Responsável" style="width: 150px; text-align: center;">
                     <h:outputText value="#{task.responsavel}"/>
                 </p:column>
                 
-                <p:column headerText="Prioridade">
-                    <h:outputText value="#{task.prioridade.descricao}"/>
-                </p:column>
-                
-                <p:column headerText="Deadline">
-                    <h:outputText value="#{task.deadline}">
-                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate"/>
-                    </h:outputText>
-                </p:column>
-                
-                <p:column headerText="Situação">
-                    <h:outputText value="#{task.situacao.descricao}"/>
-                </p:column>
-                
-                <p:column headerText="Ações" style="width:130px;text-align: center">
+                <p:column headerText="Ações" style="width:130px; text-align: center">
                     <p:commandButton icon="pi pi-check" action="#{taskController.concluirTarefa(task)}"
                                    update="form" styleClass="ui-button-success"
                                    style="margin-right: 5px;"
