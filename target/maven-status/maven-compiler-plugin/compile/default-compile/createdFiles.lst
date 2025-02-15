@@ -1,5 +1,7 @@
 com\example\taskmanager\controller\TaskController.class
+com\example\taskmanager\model\Task$Situacao.class
 com\example\taskmanager\model\Task$Prioridade.class
 com\example\taskmanager\model\Task.class
 com\example\taskmanager\service\TaskService.class
+com\example\taskmanager\TaskManagerApplication.class
 com\example\taskmanager\repository\TaskRepository.class
