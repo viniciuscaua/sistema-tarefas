@@ -48,7 +48,7 @@ Para executar o projeto, você precisará ter instalado:
 
 1. Clone o repositório:
 ```bash
-git clone [URL_DO_REPOSITORIO]
+git clone https://github.com/viniciuscaua/sistema-tarefas.git
 ```
 
 2. Configure o banco de dados PostgreSQL:
